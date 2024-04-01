@@ -20,3 +20,16 @@ Install package dependencies:
 ```sh
 pip install -r requirements.txt
 ```
+
+
+### Environment Variables
+
+Create ".env" file with contents like the following:
+
+```sh
+# OPENAI:
+OPENAI_API_KEY="sk-_________"
+
+# GOOGLE CLOUD:
+GOOGLE_APPLICATION_CREDENTIALS="/path/to/text-embeddings-2024/google-credentials.json"
+```
