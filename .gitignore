@@ -2,6 +2,9 @@
 google-credentials.json
 data/
 
+results/*
+
+
 
 
 # Byte-compiled / optimized / DLL files

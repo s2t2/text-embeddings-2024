@@ -33,3 +33,22 @@ OPENAI_API_KEY="sk-_________"
 # GOOGLE CLOUD:
 GOOGLE_APPLICATION_CREDENTIALS="/path/to/text-embeddings-2024/google-credentials.json"
 ```
+
+
+## Usage
+
+### BigQuery Service
+
+```sh
+python -m app.bq_service
+```
+
+### OpenAI Service
+
+```sh
+python -m app.openai_service
+
+MODEL_NAME="text-embedding-3-small" N_DIMENSIONS=1536 python -m app.openai_service
+
+MODEL_NAME="text-embedding-3-large" N_DIMENSIONS=3072 python -m app.openai_service
+```
