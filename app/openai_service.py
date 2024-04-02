@@ -17,11 +17,6 @@ MAX_RETRIES = int(os.getenv("MAX_RETRIES", default="3"))
 MODEL_NAME = os.getenv("MODEL_NAME", default="text-embedding-3-large")
 N_DIMENSIONS = int(os.getenv("N_DIMENSIONS", default="3072"))
 
-#MODEL_NAMES_MAP = {
-#    "text-embedding-ada-002": {"dirname": "openai_ada2"}, #, "max_dims": },
-#    "text-embedding-3-small": {"dirname": "openai_3small"}, #"max_dims": },
-#    "text-embedding-3-large": {"dirname": "openai_3large"}, #"max_dims": 8191},
-#}
 
 
 class OpenAIService():
@@ -34,7 +29,6 @@ class OpenAIService():
     """
 
     def __init__(self, api_key=OPENAI_API_KEY, max_retries=MAX_RETRIES):
-        print(api_key)
         self.client = OpenAI(api_key=api_key, max_retries=max_retries)
 
     def get_models(self):
@@ -54,7 +48,10 @@ class OpenAIService():
                         3-large max is 3072
                         3-small max is 1536
 
-                format_as (str) : return original "response", or just the embeddings as a "list" or "df"
+                format_as (str) : return original "response",
+                                or just the embeddings as a "list"
+                                or "df" for dataframe with single embeddings column
+                                or "df_unpacked" for dataframe with a column per embedding dimension
 
             See:
                 + https://platform.openai.com/docs/guides/embeddings/embedding-models
@@ -83,10 +80,13 @@ class OpenAIService():
         embeddings = [e.embedding for e in response.data]
 
         if format_as == "df":
+            # COLUMN PER DIMENSION
             df = DataFrame(embeddings)
             df.columns = [f"{col_prefix}_{i}" for i in range(1, len(df.columns)+1)]
             df.insert(0, "text", texts) # insert column as the first
             return df
+        elif format_as == "df_packed":
+            return DataFrame({"text": texts, "embeddings": embeddings})
         elif format_as == "response":
             return response
         else:

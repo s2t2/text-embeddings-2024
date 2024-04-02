@@ -32,7 +32,7 @@ def dynamic_batches(texts, batch_char_limit=30_000) -> List[List[str]] :
 
             if text_chars > batch_char_limit:
                 # CAP THE TEXT AT THE MAX BATCH LENGTH
-                text = text[0:batch_char_limit-1]
+                text = text[0:batch_char_limit]
 
             batches.append(batch)
             batch = [text]
@@ -71,7 +71,7 @@ def dynamic_df_batches(df:DataFrame, text_colname="texts", batch_char_limit=30_0
             if text_chars > batch_char_limit:
                 # CAP THE TEXT AT THE MAX BATCH LENGTH:
                 #text = text[0:batch_char_limit-1]
-                row[text_colname] = text[0:batch_char_limit-1]
+                row[text_colname] = text[0:batch_char_limit]
                 text_chars = len(row[text_colname])
             # CLEAR AND RESET THE BATCH:
             batches.append(batch)
@@ -80,5 +80,39 @@ def dynamic_df_batches(df:DataFrame, text_colname="texts", batch_char_limit=30_0
 
     if batch:
         batches.append(batch)
+
+    return batches
+
+
+
+def dynamic_df_slices(df:DataFrame, text_colname="text", batch_char_limit=30_000) -> List[DataFrame]:
+
+    batches = []
+    batch = []
+    batch_length = 0
+
+    df = df.copy()
+    #df["text_truncated"] = df[text_colname].str.slice(stop=batch_char_limit)
+    #df["text_truncated_length"] = df["text_truncated"].str.len()
+    df[text_colname] = df[text_colname].str.slice(stop=batch_char_limit)
+
+    for _, row in df.iterrows():
+        # if any texts exceed the max batch length, we will truncate them at the batch length:
+        #text = row["text_truncated"]
+        #text_length = row["text_truncated_length"]
+        #text = row[text_colname][0:batch_char_limit-1]
+        text = row[text_colname]
+        text_length = len(text)
+
+        if (batch_length + text_length) <= batch_char_limit:
+            batch.append(row)
+            batch_length += text_length
+        else:
+            batches.append(DataFrame(batch))
+            batch = [row]
+            batch_length = text_length
+
+    if batch:
+        batches.append(DataFrame(batch))
 
     return batches

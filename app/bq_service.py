@@ -50,10 +50,6 @@ class BigQueryService():
     #    for i in range(0, len(my_list), batch_size):
     #        yield my_list[i : i + batch_size]
 
-    #@staticmethod
-    #def split_into_batches(my_list, batch_size=10_000):
-    #    return split_into_batches(my_list=my_list, batch_size=batch_size)
-
     # @ staticmethod
     #def generate_timestamp(dt=None):
     #    """Formats datetime object for storing in BigQuery. Uses current time by default. """
@@ -72,7 +68,7 @@ class BigQueryService():
         rows_to_insert = [list(d.values()) for d in records]
         #errors = self.client.insert_rows(table, rows_to_insert)
         errors = []
-        batches = list(BigQueryService.split_into_batches(rows_to_insert, batch_size=batch_size))
+        batches = list(split_into_batches(rows_to_insert, batch_size=batch_size))
         for batch in batches:
             errors += self.client.insert_rows(table, batch)
         return errors
