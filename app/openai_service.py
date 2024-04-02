@@ -17,6 +17,13 @@ MAX_RETRIES = int(os.getenv("MAX_RETRIES", default="3"))
 MODEL_NAME = os.getenv("MODEL_NAME", default="text-embedding-3-large")
 N_DIMENSIONS = int(os.getenv("N_DIMENSIONS", default="3072"))
 
+#MODEL_NAMES_MAP = {
+#    "text-embedding-ada-002": {"dirname": "openai_ada2"}, #, "max_dims": },
+#    "text-embedding-3-small": {"dirname": "openai_3small"}, #"max_dims": },
+#    "text-embedding-3-large": {"dirname": "openai_3large"}, #"max_dims": 8191},
+#}
+
+
 class OpenAIService():
     """Interface for fetching embeddings from OpenAI API.
 
