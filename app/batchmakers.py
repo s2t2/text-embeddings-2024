@@ -1,15 +1,17 @@
+from typing import List
 
+from pandas import DataFrame, Series
 
 
 def split_into_batches(my_list, batch_size=10_000):
-    """Splits a list into evenly sized batches"""
+    """Splits a list into evenly sized batches. Returns a generator!"""
     # h/t: https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
     for i in range(0, len(my_list), batch_size):
         yield my_list[i : i + batch_size]
 
 
 
-def dynamic_batches(texts, batch_char_limit=30_000):
+def dynamic_batches(texts, batch_char_limit=30_000) -> List[List[str]] :
     """Splits texts into batches, with specified max number of characters per batch.
         Caps text length at the maximum batch size (individual text cannot exceed batch size).
         Batches may have different lengths.
@@ -42,7 +44,7 @@ def dynamic_batches(texts, batch_char_limit=30_000):
     return batches
 
 
-def dynamic_df_batches(df, text_colname="texts", batch_char_limit=30_000):
+def dynamic_df_batches(df:DataFrame, text_colname="texts", batch_char_limit=30_000) -> List[List[dict]]:
     """Splits texts into batches, with specified max number of characters per batch.
         Caps text length at the maximum batch size (individual text cannot exceed batch size).
         Batches may have different lengths (in terms of number of rows).
@@ -62,7 +64,7 @@ def dynamic_df_batches(df, text_colname="texts", batch_char_limit=30_000):
 
         if (batch_chars + text_chars) <= batch_char_limit:
             # THERE IS ROOM TO ADD THIS TEXT TO THE BATCH
-            batch.append(row)
+            batch.append(dict(row)) # consider collecting the series or the dict
             batch_chars += text_chars
         else:
             # NO ROOM IN THIS BATCH, START A NEW ONE:
@@ -73,7 +75,7 @@ def dynamic_df_batches(df, text_colname="texts", batch_char_limit=30_000):
                 text_chars = len(row[text_colname])
             # CLEAR AND RESET THE BATCH:
             batches.append(batch)
-            batch = [row]
+            batch = [dict(row)] # consider collecting the series or the dict
             batch_chars = text_chars
 
     if batch:

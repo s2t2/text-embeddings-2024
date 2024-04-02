@@ -31,17 +31,17 @@ def test_dynamic_batches():
     ]
 
 def test_dynamic_df_batches():
-    texts_df = DataFrame({"text":texts, "user_id": [i for i in range(1, len(texts)+1)]})
+    texts_df = DataFrame({"text": texts, "user_id": [i for i in range(1, len(texts)+1)]})
     batches = dynamic_df_batches(texts_df, text_colname="text", batch_char_limit=30)
 
-    records = []
-    for batch in batches:
-        batch_records = []
-        for row in batch:
-            batch_records.append(dict(row))
-        records.append(batch_records)
+    #records = []
+    #for batch in batches:
+    #    batch_records = []
+    #    for row in batch:
+    #        batch_records.append(dict(row))
+    #    records.append(batch_records)
 
-    assert records == [
+    assert batches == [
         [{'text': 'Short and sweet', 'user_id': 1}, {'text': 'Short short', 'user_id': 2}],
         [{'text': 'I like apples, but bananas ar', 'user_id': 3}],
         [{'text': 'This is a tweet about bananas', 'user_id': 4}],
