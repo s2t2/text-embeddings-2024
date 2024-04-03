@@ -42,6 +42,7 @@ class OpenAIService():
             Params:
 
                 model : model name (i.e. "text-embedding-ada-002", "text-embedding-3-small", "text-embedding-3-large")
+                        3-large max context length is 8192 tokens
 
                 kwargs :
                     dimensions : number of dimensions (for v3 models)

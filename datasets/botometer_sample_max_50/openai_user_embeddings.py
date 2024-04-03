@@ -2,6 +2,7 @@ import os
 from functools import cached_property
 from time import sleep
 
+from openai import BadRequestError
 #from openai.error import RateLimitError, ServiceUnavailableError
 from pandas import DataFrame
 
@@ -56,6 +57,8 @@ class OpenAIUserEmbeddingsJob():
             FROM `{self.dataset_address}.botometer_sample_max_50_user_texts` u
             LEFT JOIN  `{self.embeddings_table_address}` emb
                 ON u.user_id = emb.user_id
+                AND emb.model_name='{self.model_name}'
+                AND emb.dimensions={self.n_dimensions}
             WHERE emb.user_id IS NULL
             ORDER BY u.user_id
         """
@@ -96,17 +99,24 @@ if __name__ == "__main__":
     print("---------------")
     print("EMBEDDINGS...")
 
-    batches = dynamic_df_slices(users_df, text_colname="status_texts")
+    batches = dynamic_df_slices(users_df, text_colname="status_texts", batch_char_limit=20_000) # cuts off single longest user that has length of 22467, to get through bad request error
 
     for batch_df in batches:
         user_ids = batch_df["user_id"]
         texts = batch_df["status_texts"].tolist()
         print("BATCH:", len(batch_df), batch_df["texts_length"].sum())
 
-        embeddings_df = job.ai.get_embeddings(texts=texts, model=MODEL_NAME, dimensions=N_DIMENSIONS, format_as="df", col_prefix="dim")
+        try:
+            embeddings_df = job.ai.get_embeddings(texts=texts, model=MODEL_NAME, dimensions=N_DIMENSIONS, format_as="df", col_prefix="dim")
+        except (BadRequestError) as err:
+            # openai.BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens, however you requested 8545 tokens (8545 in your prompt; 0 for the completion).
+            # Please reduce your prompt; or completion length.", 'type': 'invalid_request_error', 'param': None, 'code': None}}
+            print(err)
+            breakpoint()
+
         embedding_cols = [col for col in embeddings_df.columns if "dim" in col]
         embeddings = embeddings_df[embedding_cols].round(8)
-        embeddings = embeddings.apply(lambda row: row.tolist(), axis=1)
+        embeddings = embeddings.apply(lambda row: row.tolist(), axis=1) # pack embeddings into a single column
 
         batch_df.reset_index(drop=True, inplace=True) # reset index (has original pre-batch index) so we can add embeddings back
         batch_df["model_name"] = MODEL_NAME
@@ -119,7 +129,7 @@ if __name__ == "__main__":
             if any(errors):
                 print("ERRORS:")
                 print(errors)
-                #breakpoint()
+                breakpoint()
         except Exception as err:
             print(err)
             breakpoint()
