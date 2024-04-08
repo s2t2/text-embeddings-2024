@@ -51,8 +51,8 @@ class OpenAIService():
 
                 format_as (str) : return original "response",
                                 or just the embeddings as a "list"
-                                or "df" for dataframe with single embeddings column
-                                or "df_unpacked" for dataframe with a column per embedding dimension
+                                or "df" for dataframe with a column per embedding dimension (i.e. "unpacked")
+                                or "df_packed" for dataframe with single embeddings column
 
             See:
                 + https://platform.openai.com/docs/guides/embeddings/embedding-models
