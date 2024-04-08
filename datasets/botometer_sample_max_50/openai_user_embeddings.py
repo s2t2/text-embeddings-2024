@@ -143,18 +143,18 @@ if __name__ == "__main__":
 
     exit()
 
-    sql = f"""
-        SELECT
-            count(distinct user_id) as user_count
-            -- , count(distinct status_id)  as status_count
-        FROM `{job.embeddings_table_name}`
-        -- LIMIT 100
-    """
-    job.bq.query_to_df(sql)
+    #sql = f"""
+    #    SELECT
+    #        count(distinct user_id) as user_count
+    #        -- , count(distinct status_id)  as status_count
+    #    FROM `{job.embeddings_table_name}`
+    #    -- LIMIT 100
+    #"""
+    #job.bq.query_to_df(sql)
 
-    sql = f"""
-        SELECT user_id, model_name, dimensions --, embeddings
-        FROM `{job.embeddings_table_name}`
-        LIMIT 10
-    """
-    job.bq.query_to_df(sql)
+    #sql = f"""
+    #    SELECT user_id, model_name, dimensions --, embeddings
+    #    FROM `{job.embeddings_table_name}`
+    #    LIMIT 10
+    #"""
+    #job.bq.query_to_df(sql)
