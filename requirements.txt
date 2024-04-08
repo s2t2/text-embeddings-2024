@@ -2,10 +2,15 @@
 python-dotenv
 
 pandas #  2.0.3
+pandas-gbq # for downloading data from bigquery
+
+plotly # 5.15.0
+kaleido # 0.2.1 ... for exporting plotly images to png / html
 
 openai==1.14.3
 
 google-cloud-bigquery==3.17.1
+
 
 
 #
